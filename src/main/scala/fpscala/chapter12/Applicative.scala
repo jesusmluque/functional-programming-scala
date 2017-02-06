@@ -1,24 +1,24 @@
 package fpscala.chapter12
 
 trait Applicative[F[_]] extends Functor[F]{
-  def unit[A](a: A):F[A]
+  def unit[A](a: => A):F[A]
   
-  def apply[A,B](fab: F[A => B])(fa: F[A]):F[B] =
+  def ap[A,B](fab: F[A => B])(fa: F[A]):F[B] =
     this.map2(fab, fa)((f: A => B, a:A) => f(a))
     
   def map2[A, B, C](fa: F[A], fb: F[B])(f: (A,B) => C):F[C] = {
     val fab = this.map(fa)(f.curried)
-    this.apply(fab)(fb)
+    this.ap(fab)(fb)
   }
     
   def map3[A,B,C,D](fa: F[A], fb: F[B], fc:F[C])(f: (A,B,C) => D): F[D] = {
     val fab = this.map(fa)(f.curried)
-    this.apply(this.apply(fab)(fb))(fc)
+    this.ap(this.ap(fab)(fb))(fc)
   }
     
   def map4[A,B,C,D,E](fa: F[A], fb: F[B], fc:F[C], fd: F[D])(f: (A,B,C,D) => E): F[E] = {
     val fab = this.map(fa)(f.curried)
-    this.apply(this.apply(this.apply(fab)(fb))(fc))(fd)
+    this.ap(this.ap(this.ap(fab)(fb))(fc))(fd)
   }
     
   def map[A,B](fa: F[A])(f: A => B):F[B] = {

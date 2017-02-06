@@ -6,12 +6,12 @@ object Example4 {
   val optionA = new Applicative[Option] {
     def unit[A](a:A):Option[A] = Some(a)
     override def map[A,B](fa: Option[A])(f: A => B):Option[B] = fa map f
-    override def apply[A,B](fab: Option[A => B])(fa: Option[A]):Option[B] =
+    override def ap[A,B](fab: Option[A => B])(fa: Option[A]):Option[B] =
       fab map ((f: A => B) => fa.map(f).get)
   }
 
   optionA.map2(Some(3),Some(5))(_ + _)
-  optionA.apply(Some((_:String) + " hola"))(Some("Pedro"))
+  optionA.ap(Some((_:String) + " hola"))(Some("Pedro"))
 
   implicit val optionA2 = new Applicative[Option] {
     def unit[A](a:A):Option[A] = Some(a)
@@ -21,7 +21,7 @@ object Example4 {
 
 
   optionA2.map2(Some(3),Some(5))(_ + _)
-  optionA2.apply(Some((_:String) + " hola"))(Some("Pedro"))
+  optionA2.ap(Some((_:String) + " hola"))(Some("Pedro"))
   optionA2.map3(Some(4), Some(5), Some(6))(_ + _ + _)
 
   optionA2.map4(Some(4), Some(5), Some(6), Some(7))(_ + _ + _ + _)
@@ -36,7 +36,7 @@ object Example4 {
     def unit[A](a: A):Option[A] = Some(a)
     override def join[A](ffa: Option[Option[A]]):Option[A] = ffa.get
     override def map[A,B](fa: Option[A])(f: A => B) = fa map f
-    override def apply[A,B](fab: Option[A => B])(fa: Option[A]):Option[B] =
+    override def ap[A,B](fab: Option[A => B])(fa: Option[A]):Option[B] =
       this.map(fab)((f: A => B) => fa.map(f).get)
   }
 
