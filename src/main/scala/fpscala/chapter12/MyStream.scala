@@ -47,6 +47,25 @@ sealed trait MyStream[+A] {
         s
     }
 
+  def map[B](f: A => B): MyStream[B] =
+    foldRight(MyStream.empty[B]) { (a, s) =>
+      MyStream.cons(f(a), s)
+    }
+
+  def filter(f: A => Boolean): MyStream[A] =
+    foldRight(MyStream.empty[A]) { (a, s) =>
+      if (f(a)) {
+        MyStream.cons(a, s)
+      } else
+        s
+    }
+
+  def flatMap[B](f: A => MyStream[B]): MyStream[B] =
+    foldRight(MyStream.empty[B])(f(_).append(_))
+
+  def append[B >: A](s: => MyStream[B]): MyStream[B] =
+    foldRight(s)(MyStream.cons(_, _))
+
 }
 case object Empty extends MyStream[Nothing]
 case class Cons[+A](h: () => A, t: () => MyStream[A]) extends MyStream[A]
@@ -61,8 +80,25 @@ object MyStream {
 
   def empty[A]: MyStream[A] = Empty
 
+  def constant[A](a: A): MyStream[A] =
+    cons(a, constant(a))
+
   def apply[A](as: A*): MyStream[A] =
     if (as.isEmpty) empty else cons(as.head, apply(as.tail: _*))
 
+  def from(n: Int): MyStream[Int] =
+    cons(n, from(n + 1))
+
+  def unfold[A, S](z: S)(f: S => Option[(A, S)]): MyStream[A] = f(z) match {
+    case None => empty[A]
+    case Some((a, s)) => cons(a, unfold(s)(f))
+  }
+
+  def fibs: MyStream[Int] =
+    unfold((0, 1)){ s => {
+        val value = s._1 + s._2
+        Some(value, (s._2, value))
+      }
+    }
 
 }

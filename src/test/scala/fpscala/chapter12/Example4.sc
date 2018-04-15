@@ -4,7 +4,7 @@ object Example4 {
   println("hola")
 
   val optionA = new Applicative[Option] {
-    def unit[A](a:A):Option[A] = Some(a)
+    override def unit[A](a: => A):Option[A] = Some(a)
     override def map[A,B](fa: Option[A])(f: A => B):Option[B] = fa map f
     override def ap[A,B](fab: Option[A => B])(fa: Option[A]):Option[B] =
       fab map ((f: A => B) => fa.map(f).get)
@@ -14,7 +14,7 @@ object Example4 {
   optionA.ap(Some((_:String) + " hola"))(Some("Pedro"))
 
   implicit val optionA2 = new Applicative[Option] {
-    def unit[A](a:A):Option[A] = Some(a)
+    def unit[A](a: => A):Option[A] = Some(a)
     override def map2[A,B,C](fa: Option[A], fb: Option[B])(f: (A,B) => C): Option[C] =
       fb.map(fa.map(f.curried).get)
   }
@@ -33,7 +33,7 @@ object Example4 {
   optionA2.product(Some(2), Some(4))
 
   val optionM = new Monad[Option] {
-    def unit[A](a: A):Option[A] = Some(a)
+    def unit[A](a: => A):Option[A] = Some(a)
     override def join[A](ffa: Option[Option[A]]):Option[A] = ffa.get
     override def map[A,B](fa: Option[A])(f: A => B) = fa map f
     override def ap[A,B](fab: Option[A => B])(fa: Option[A]):Option[B] =
@@ -44,7 +44,7 @@ object Example4 {
 
 
   val streamApplicative = new Applicative[Stream] {
-    override def unit[A](a: A):Stream[A] = Stream.continually(a)
+    override def unit[A](a: => A):Stream[A] = Stream.continually(a)
     override def map[A,B](fa: Stream[A])(f: A => B) = fa map f
     override def map2[A,B,C](fa: Stream[A], fb: Stream[B])(f: (A,B) => C):Stream[C] =
       map(fa.zip(fb))(f.tupled)

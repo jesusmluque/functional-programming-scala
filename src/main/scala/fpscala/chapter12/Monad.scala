@@ -6,5 +6,4 @@ trait Monad[F[_]] extends Applicative[F] {
   def compose[A,B,C](f1: A => F[B], f2: B => F[C]):(A => F[C]) = (a:A) => {
     flatMap(f1(a))(f2)
   }
-  
 }

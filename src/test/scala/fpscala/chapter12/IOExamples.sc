@@ -49,4 +49,36 @@ object IOExamples {
       () => f(fa())()
   }
   Free.run[Console, Function0, Unit](prueba)(consoleToFunction).apply()
+
+  val p = (new { def f = "hola"}).f
+
+  trait Const[A]
+  type Id[A] = A
+
+  val singletonList = new ~>[Id, List] {
+    def apply[A](a: A):List[A] = List(a)
+  }
+  def pairList[A,B,C](l: Id ~> List, b:B, c: C):(List[B], List[C]) =
+    (l(b), l(c))
+  pairList(singletonList, 4, "hola")
+  implicit val entero:Monoid[Int] = new Monoid[Int] {
+    override def zero = 0
+    override def op(a:Int, b:Int) = a + b
+  }
+  implicit val doble:Monoid[Double] = new Monoid[Double] {
+    override def zero = 0.0
+    override def op(a:Double, b:Double) = a + b
+  }
+  def getMonoid[A](implicit m: Monoid[A]) = m
+  val monoidGeneral = new ~>[Id, Monoid] {
+
+    def apply[A](a:A):Monoid[A] = getMonoid[A]
+
+  }
+
+  def dobleFold[A,B,C](m: Id ~> Monoid, l1: List[B], l2: List[C]):(B,C) = {
+    (l1.foldLeft(m(l1.head).zero)(m(l1.head).op),
+      l2.foldLeft(m(l2.head).zero)(m(l2.head).op))
+  }
+  //dobleFold(monoidGeneral, List(1,2,3,4,5), List(1.0,2.0,3.0,4.0,5.0))
 }
