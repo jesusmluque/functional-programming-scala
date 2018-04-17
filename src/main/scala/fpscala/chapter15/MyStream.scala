@@ -1,9 +1,9 @@
-package fpscala.chapter12
+package fpscala.chapter15
 
 /**
   * Created by jesus on 5/02/17.
   */
-sealed trait MyStream[+A] {
+trait MyStream[+A] {
   def toList: List[A] = this match {
     case Empty => List()
     case Cons(h, t) => h() :: t().toList
@@ -67,8 +67,6 @@ sealed trait MyStream[+A] {
     foldRight(s)(MyStream.cons(_, _))
 
 }
-case object Empty extends MyStream[Nothing]
-case class Cons[+A](h: () => A, t: () => MyStream[A]) extends MyStream[A]
 
 object MyStream {
   def cons[A](hd: => A, td: => MyStream[A]): MyStream[A] = {

@@ -1,5 +1,7 @@
 package fpscala.chapter12
 
+import fpscala.chapter10.Monoid
+
 trait Traverse[F[_]] extends Functor[F] with Foldable[F] {
   type Const[M,N] = M
   

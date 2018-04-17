@@ -1,5 +1,7 @@
-import fpscala.chapter12.Translate.~>
-import fpscala.chapter12._
+import fpscala.chapter10.Monoid
+import fpscala.chapter11.Monad
+import fpscala.chapter13.Translate.~>
+import fpscala.chapter13._
 
 
 object IOExamples {
