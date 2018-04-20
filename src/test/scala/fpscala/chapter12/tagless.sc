@@ -4,8 +4,8 @@ import scala.collection.mutable
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
-import fpscala.chapter12.Monad
-import fpscala.chapter12.Implicits.monadOps
+import fpscala.chapter11.Monad
+import fpscala.chapter11.Implicits.monadOps
 
 object tagless {
 
