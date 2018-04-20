@@ -1,4 +1,4 @@
-package fpscala.chapter12
+package fpscala.chapter13
 
 /**
   * Created by jesus on 18/02/17.
@@ -139,14 +139,6 @@ trait Process[I, O] {
     case Await(r) => Await(r andThen (_ flatMap f))
   }
 }
-case class Halt[I, O]() extends Process[I, O]
-case class Emit[I, O](
-  head: O,
-  tail: Process[I, O] = Halt[I, O]()
-) extends Process[I, O]
-case class Await[I, O](
-  recv: Option[I] => Process[I, O]
-) extends Process[I, O]
 
 object Process {
 

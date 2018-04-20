@@ -1,7 +1,10 @@
-package fpscala.chapter12
+package fpscala.chapter11
 
-import scala.concurrent.Future
+import fpscala.chapter12.Applicative
 
+/**
+  * Created by jesus on 17/04/18.
+  */
 trait Monad[F[_]] extends Applicative[F] {
   def flatMap[A,B](fa: F[A])(f: A => F[B]):F[B] = join(map(fa)(f))
   def join[A](ffa:F[F[A]]):F[A] = flatMap(ffa)(fa => fa)

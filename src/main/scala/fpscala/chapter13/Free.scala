@@ -1,6 +1,8 @@
-package fpscala.chapter12
+package fpscala.chapter13
 
-import fpscala.chapter12.Translate.~>
+import fpscala.chapter11.Monad
+import fpscala.chapter13.Translate.~>
+
 
 /**
   * Created by jesus on 28/01/17.
@@ -12,9 +14,6 @@ trait Free[F[_], A] { self =>
     flatMap(f andThen(Return(_)))
 
 }
-case class Return[F[_], A](a: A) extends Free[F,A]
-case class Suspend[F[_], A](s: F[A]) extends Free[F, A]
-case class FlatMap[F[_], A, B](sub: Free[F, A], f: A => Free[F, B]) extends Free[F,B]
 
 object Free {
   def freeMonad[F[_]]: Monad[({type f[a] = Free[F, a]})#f] = {

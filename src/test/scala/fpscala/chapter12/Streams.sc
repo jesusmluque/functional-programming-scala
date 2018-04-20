@@ -1,4 +1,5 @@
-import fpscala.chapter12._
+import fpscala.chapter13.Process
+import fpscala.chapter15.MyStream
 object Streams {
   val s = MyStream(1,2,3,4,5,6,7,8,9)
 

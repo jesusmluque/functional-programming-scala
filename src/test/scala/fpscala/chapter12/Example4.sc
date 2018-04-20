@@ -1,3 +1,5 @@
+import fpscala.chapter10.Monoid
+import fpscala.chapter11.Monad
 import fpscala.chapter12._
 
 object Example4 {
