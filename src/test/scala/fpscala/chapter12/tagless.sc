@@ -1,11 +1,13 @@
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+
 import scala.collection.mutable
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import fpscala.chapter11.Monad
 import fpscala.chapter11.Implicits.monadOps
+
 
 object tagless {
 
@@ -46,6 +48,7 @@ object tagless {
   }
 
   implicit def fInstance:Monad[Future] = new futureInstance {}
+
 
   //And at the end, we implement the interpreter of our algebra
   //using an implementation of a Future Monad.
