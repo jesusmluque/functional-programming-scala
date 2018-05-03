@@ -49,3 +49,9 @@ trait Applicative[F[_]] extends Functor[F]{
   def traverse[A, B](as: List[A])(f: A => F[B]):F[List[B]] = 
     sequence(as map f)
 }
+
+object Implicits {
+  implicit class applicativeSyntax[F[_]: Applicative, A](fa: F[A]) {
+    def |@|[B, C](fb: F[B])(f: (A, B) => C): F[C] = implicitly[Applicative[F]].map2(fa, fb)(f)
+  }
+}
