@@ -11,6 +11,13 @@ trait Monad[F[_]] extends Applicative[F] {
   def compose[A,B,C](f1: A => F[B], f2: B => F[C]):(A => F[C]) = (a:A) => {
     flatMap(f1(a))(f2)
   }
+
+  //override def map[A, B](fa: F[A])(f: (A) => B): F[B] = flatMap(fa){a => unit(f(a))}
+  override def ap[A,B](fab: F[A => B])(fa: F[A]):F[B] = flatMap(fab) { (f: A => B) =>
+    flatMap(fa){ a =>
+      unit(f(a))
+    }
+  }
 }
 
 object Implicits {

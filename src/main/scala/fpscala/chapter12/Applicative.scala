@@ -22,7 +22,8 @@ trait Applicative[F[_]] extends Functor[F]{
   }
     
   def map[A,B](fa: F[A])(f: A => B):F[B] = {
-    map2(fa, fa)((a:A, _) => f(a))
+    ap(unit(f))(fa)
+    //map2(fa, fa)((a:A, _) => f(a))
   }
   
   def sequence[A](fas: List[F[A]]): F[List[A]] = fas match {
