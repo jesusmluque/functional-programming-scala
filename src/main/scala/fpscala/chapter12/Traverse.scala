@@ -37,3 +37,14 @@ trait Traverse[F[_]] extends Functor[F] with Foldable[F] {
     
   }
 }
+object ImplicitsOts {
+
+  implicit class TraverseOpts[F[_]: Traverse, G[_]: Applicative, A](t: F[G[A]]) {
+    def sequence:G[F[A]] = implicitly[Traverse[F]].sequence(t)
+  }
+  implicit class SequenceOpts[F[_]: Traverse, G[_]: Applicative, A](t: F[A]) {
+    def traverse[B](f: A => G[B]): G[F[B]] = implicitly[Traverse[F]].traverse(t)(f)
+    def foldMap[B](f: A => B)(implicit mb: Monoid[B]):B = implicitly[Traverse[F]].foldMap(t)(f)(mb)
+  }
+
+}

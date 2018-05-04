@@ -2,10 +2,13 @@ import fpscala.chapter10.Monoid
 import fpscala.chapter11.Monad
 import fpscala.chapter13.Translate.~>
 import fpscala.chapter13._
+import fpscala.chapter12._
+
 
 
 object IOExamples {
 
+  //Trampoline using Free monad and Functions 0 to create a Console
   def runTrampoline[A](f: Free[Function0, A]): A = f match {
     case Return(a:A) => a
     case Suspend(f) => f()
@@ -37,6 +40,10 @@ object IOExamples {
 
   runTrampoline(Free.freeMonad[Function0].map(res)((_) => println("hola")))
 
+  //---------------------------------------------------------------------------
+
+  //ConsoleIO free monad example
+
   val prueba = for {
     _ <- Console.printLn("hola esta es la primera")
     _ <- Console.printLn("esta es la segunda")
@@ -52,9 +59,12 @@ object IOExamples {
   }
   Free.run[Console, Function0, Unit](prueba)(consoleToFunction).apply()
 
-  val p = (new { def f = "hola"}).f
+//-------------------------------------------------------------------------------------
 
-  trait Const[A]
+//
+  val p = new { def f = "hola"}.f
+  p
+
   type Id[A] = A
 
   val singletonList = new ~>[Id, List] {
@@ -63,24 +73,26 @@ object IOExamples {
   def pairList[A,B,C](l: Id ~> List, b:B, c: C):(List[B], List[C]) =
     (l(b), l(c))
   pairList(singletonList, 4, "hola")
-  implicit val entero:Monoid[Int] = new Monoid[Int] {
+
+  //-------------------------------------------------------------------------------------
+  //Fold two different lists using two different instances of Monoic
+  implicit val intInstance:Monoid[Int] = new Monoid[Int] {
     override def zero = 0
     override def op(a:Int, b:Int) = a + b
   }
-  implicit val doble:Monoid[Double] = new Monoid[Double] {
+  implicit val doubleInstance:Monoid[Double] = new Monoid[Double] {
     override def zero = 0.0
     override def op(a:Double, b:Double) = a + b
   }
-  def getMonoid[A](implicit m: Monoid[A]) = m
-  val monoidGeneral = new ~>[Id, Monoid] {
-
-    def apply[A](a:A):Monoid[A] = getMonoid[A]
-
+  import fpscala.chapter10.Implicits.monoidOps
+  def foldTwoDifferentMonoids[B: Monoid, C: Monoid](l1: List[B], l2: List[C]):(B,C) = {
+    (l1.foldLeft(l1.head.zero)(l1.head.op),
+      l2.foldLeft(l2.head.zero)(l2.head.op))
   }
+  foldTwoDifferentMonoids(List(1,2,3,4,5), List(1.0,2.0,3.0,4.0,5.0))
+}
 
-  def dobleFold[A,B,C](m: Id ~> Monoid, l1: List[B], l2: List[C]):(B,C) = {
-    (l1.foldLeft(m(l1.head).zero)(m(l1.head).op),
-      l2.foldLeft(m(l2.head).zero)(m(l2.head).op))
-  }
-  //dobleFold(monoidGeneral, List(1,2,3,4,5), List(1.0,2.0,3.0,4.0,5.0))
+implicit def freeMonoid[A]:Monoid[List[A]] = new Monoid[List[A]] {
+  override def zero = List()
+  override def op(a:List[A], b:List[A]) = a ++ b
 }

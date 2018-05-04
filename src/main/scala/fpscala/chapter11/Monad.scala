@@ -35,8 +35,8 @@ object Implicits {
     def flatMap[B](f: A => F[B]): F[B] = implicitly[Monad[F]].flatMap(fa)(f)
     def map[B](f: A => B): F[B] = implicitly[Monad[F]].map(fa)(f)
     def unit[A](a: A):F[A] = implicitly[Monad[F]].unit(a)
-    def >>=[B](f: A => B): F[B] = implicitly[Monad[F]].map(fa)(f)
-    def bind[B](f: A => B): F[B] = implicitly[Monad[F]].map(fa)(f)
+    def >>=[B](f: A => F[B]): F[B] = implicitly[Monad[F]].flatMap(fa)(f)
+    def bind[B](f: A => F[B]): F[B] = implicitly[Monad[F]].flatMap(fa)(f)
   }
 
 }

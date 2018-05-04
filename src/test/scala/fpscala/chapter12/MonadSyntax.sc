@@ -10,7 +10,8 @@ implicit val optionM = new Monad[Option] {
 val value1: Option[Int] = Some(4)
 val value2: Option[Int] = Some(2)
 
-value1 bind {a => a + 1}
-value1 >>= {a => a + 1}
+value1 bind {a => Some(a + 1)}
+value1 >>= {a => Some(a + 1)}
 
+//A monad is also an Applicative
 (value1 |@| value2) {_ + _}

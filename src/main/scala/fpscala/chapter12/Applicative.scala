@@ -54,5 +54,10 @@ trait Applicative[F[_]] extends Functor[F]{
 object Implicits {
   implicit class applicativeSyntax[F[_]: Applicative, A](fa: F[A]) {
     def |@|[B, C](fb: F[B])(f: (A, B) => C): F[C] = implicitly[Applicative[F]].map2(fa, fb)(f)
+    def ap[B](fab: F[A => B]):F[B] = implicitly[Applicative[F]].ap(fab)(fa)
+    def map3[B,C,D](fb: F[B], fc:F[C])(f: (A,B,C) => D): F[D] = implicitly[Applicative[F]].map3(fa, fb, fc)(f)
+    def map4[B,C,D,E](fb: F[B], fc:F[C], fd:F[D])(f: (A,B,C,D) => E): F[E] = implicitly[Applicative[F]].map4(fa, fb, fc, fd)(f)
+    def replicateM(n: Int):F[List[A]] = implicitly[Applicative[F]].replicateM(n,fa)
+    def product[B](fb: F[B]):F[(A,B)] = implicitly[Applicative[F]].product(fa, fb)
   }
 }

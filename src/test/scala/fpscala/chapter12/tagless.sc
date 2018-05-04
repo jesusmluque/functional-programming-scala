@@ -7,6 +7,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import fpscala.chapter11.Monad
 import fpscala.chapter11.Implicits.monadOps
+import shapeless.{Generic, HList}
 
 
 object tagless {
@@ -14,12 +15,14 @@ object tagless {
   //-------------------The Algebra and the Program-----------------------
   // our business logic, could be
   //completley separated from the rest.
+
   case class Person(name: String, id: UUID)
   //The Algebra for a repository of persons.
   trait PersonRepository[F[_]] {
     def save(person: Person):F[Person]
     def findPerson(id: UUID):F[Option[Person]]
   }
+
   //Define the program using an abstract Monad F.
   class Program[F[_]: Monad](repo: PersonRepository[F]) {
     def addOne() = {
@@ -29,6 +32,7 @@ object tagless {
       //With the MonadOpts implementing only the flatmap, you can avoid implicitly
       //repo.save(p1) >>= (_ => repo.findPerson(p1.id))
       //If the MonadOpts has flatmap and map, now we can use the for comprehencion
+
       for {
         _ <- repo.save(p1)
         p <- repo.findPerson(p1.id)
@@ -48,7 +52,6 @@ object tagless {
   }
 
   implicit def fInstance:Monad[Future] = new futureInstance {}
-
 
   //And at the end, we implement the interpreter of our algebra
   //using an implementation of a Future Monad.
