@@ -2,7 +2,6 @@ import fpscala.chapter10.Monoid
 import fpscala.chapter11.Monad
 import fpscala.chapter13.Translate.~>
 import fpscala.chapter13._
-import fpscala.chapter12._
 
 
 
@@ -75,7 +74,7 @@ object IOExamples {
   pairList(singletonList, 4, "hola")
 
   //-------------------------------------------------------------------------------------
-  //Fold two different lists using two different instances of Monoic
+  //Fold two different lists using two different instances of Monoid
   implicit val intInstance:Monoid[Int] = new Monoid[Int] {
     override def zero = 0
     override def op(a:Int, b:Int) = a + b
@@ -85,14 +84,8 @@ object IOExamples {
     override def op(a:Double, b:Double) = a + b
   }
   import fpscala.chapter10.Implicits.monoidOps
-  def foldTwoDifferentMonoids[B: Monoid, C: Monoid](l1: List[B], l2: List[C]):(B,C) = {
-    (l1.foldLeft(l1.head.zero)(l1.head.op),
-      l2.foldLeft(l2.head.zero)(l2.head.op))
-  }
+  def foldTwoDifferentMonoids[B: Monoid, C: Monoid](l1: List[B], l2: List[C]):(B,C) = (l1.foldLeft(l1.head.zero)(_ op _),
+    l2.foldLeft(l2.head.zero)(_ op _))
   foldTwoDifferentMonoids(List(1,2,3,4,5), List(1.0,2.0,3.0,4.0,5.0))
 }
 
-implicit def freeMonoid[A]:Monoid[List[A]] = new Monoid[List[A]] {
-  override def zero = List()
-  override def op(a:List[A], b:List[A]) = a ++ b
-}
