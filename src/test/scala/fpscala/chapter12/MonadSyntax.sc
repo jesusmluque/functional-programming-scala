@@ -1,4 +1,4 @@
-import fpscala.chapter11.Monad
+ import fpscala.chapter11.Monad
 import fpscala.chapter11.Implicits._
 import fpscala.chapter12.Implicits._
 
@@ -15,3 +15,8 @@ value1 >>= {a => Some(a + 1)}
 
 //A monad is also an Applicative
 (value1 |@| value2) {_ + _}
+(Some(1) map ((_:Int) + (_:Int) + (_:Int)).curried) <*> Some(2) <*> Some(3)
+
+//Kleisli composition
+val fk = ((a:Int) => Option(a + 1)) <=< ((b:Int) => Some(b * 2))
+fk(3)

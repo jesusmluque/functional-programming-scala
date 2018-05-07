@@ -38,5 +38,8 @@ object Implicits {
     def >>=[B](f: A => F[B]): F[B] = implicitly[Monad[F]].flatMap(fa)(f)
     def bind[B](f: A => F[B]): F[B] = implicitly[Monad[F]].flatMap(fa)(f)
   }
+  implicit class kleisliOpts[F[_]: Monad, A, B](fab: A => F[B]) {
+    def <=<[C](f: B => F[C]): A => F[C] = implicitly[Monad[F]].compose(fab, f)
+  }
 
 }
