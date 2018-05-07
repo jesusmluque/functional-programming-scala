@@ -22,8 +22,8 @@ listTraverse.traverse(List(1,2,3,4)){a: Int =>
 //Using Opts for Traverse: Sequence over List[Option] and
 //traverse over List
 import fpscala.chapter12.ImplicitsOts._
-List(Option(1), Some(2)).sequence
-List(1, 2).traverse(a => Option(a + 1))
+List[Option[Int]](Some(1), Some(2)).sequence
+List(1, 2).traverse(a => Some(a + 1))
 
 //FoldMap with an instance of Monoid for Int
 implicit val mono = new Monoid[Int] {

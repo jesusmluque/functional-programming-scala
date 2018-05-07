@@ -1,19 +1,12 @@
 import fpscala.chapter12.Applicative
 import fpscala.chapter12.Implicits._
-
-val optionA = new Applicative[Option] {
-  override def unit[A](a: => A):Option[A] = Some(a)
-  override def map[A,B](fa: Option[A])(f: A => B):Option[B] = fa map f
-  override def ap[A,B](fab: Option[A => B])(fa: Option[A]):Option[B] =
-    fab map ((f: A => B) => fa.map(f).get)
-}
-
+//Option instance for Applicative type class
 implicit val optionA2 = new Applicative[Option] {
   def unit[A](a: => A):Option[A] = Some(a)
   override def map2[A,B,C](fa: Option[A], fb: Option[B])(f: (A,B) => C): Option[C] =
     fb.map(fa.map(f.curried).get)
 }
-
+//Examples using explicit syntax versus implicit syntax.
 optionA2.map2(Some(3),Some(5))(_ + _)
 (Option(3) |@| Some(5)) {_ + _}
 
@@ -32,6 +25,13 @@ Option(1).replicateM(6)
 optionA2.product(Some(2), Some(4))
 Option(2).product(Some(4))
 
+//Applicative style programming: Apply effectful functions as normal
+//ones
+val f = optionA2.unit(((a:Int ,b:Int ,c:Int) => a + b + c).curried)
+f <*> Some(1) <*> Some(2) <*> Some(3)
+(Some(1) map ((a:Int ,b:Int ,c:Int) => a + b + c).curried) <*> Some(2) <*> Some(3)
+Option(((a:Int ,b:Int ,c:Int) => a + b + c).curried) <*> Some(1) <*> Some(2) <*> Some(3)
+
 //Applicative instance for Streams
 implicit val streamApplicative = new Applicative[Stream] {
   override def unit[A](a: => A):Stream[A] = Stream.continually(a)
@@ -47,3 +47,4 @@ streamApplicative.sequence(List(streamApplicative.unit(1), streamApplicative.uni
 
 
 (Stream(1, 2) |@| Stream(1, 2)) {_ + _} toList
+

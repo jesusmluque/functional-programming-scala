@@ -1,4 +1,4 @@
-import scalaz.{Monad, OptionT, Scalaz, \/}
+import scalaz.{Monad, OptionT, Scalaz, StateT, \/}
 
 object mtl {
   import Scalaz._
@@ -33,6 +33,12 @@ object mtl {
     override def handleErrorWith[A](fa: OptionTEither[A])(f: (A) => OptionTEither[A]): OptionTEither[A] = fa.flatMap(f)
 
     override def monad: Monad[OptionTEither] = Monad[OptionTEither]
+  }
+  implicit val optionState = new MiMonadState[Option[StateT[String]], String] {override def monad: Monad[Option] = ???
+
+    override def get: Option[String] = ???
+
+    override def set(s: String): Option[Unit] = ???
   }
   //implicit def miMonadErrorIsAMonad[F[_,_]: MiMonadError, E]:Monad[F] = implicitly[MiMonadError[F, E]].monad
 
