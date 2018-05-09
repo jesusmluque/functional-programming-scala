@@ -61,3 +61,9 @@ implicit val nelComonadInstance = new Comonad[NEL] {
 val l:NEL[Int] = 3 :: 2 :: NEL(1, None)
 //Extend:
 l.extend(a => a.head + 1)
+l =>> (a => a.head + 1)
+((a: NEL[Int]) => a.head + 1) <<= l
+
+val c1 = (a: NEL[Int]) => a.head + 1
+val c2 = (a: NEL[Int]) => a.head + 2
+(c1 =<= c2)(l)
