@@ -46,6 +46,7 @@ case class NEL[A](head: A, tail:Option[NEL[A]]) {
   def tails: NEL[NEL[A]] = NEL(this, tail.map(_.tails))
   def getHead = head
   def ::(a: A) = NEL(a, Some(this))
+
 }
 //Comonad instance
 implicit val nelComonadInstance = new Comonad[NEL] {
@@ -67,3 +68,32 @@ l =>> (a => a.head + 1)
 val c1 = (a: NEL[Int]) => a.head + 1
 val c2 = (a: NEL[Int]) => a.head + 2
 (c1 =<= c2)(l)
+
+//Comonad instance for Stream
+val s = 1 to 100 toStream
+implicit val streamComonad = new Comonad[Stream] {
+  override def extract[A](a: Stream[A]) = a.head
+
+  override def duplicate[A](a: Stream[A]): Stream[Stream[A]] = {
+    a match {
+      case s@Stream(_) => Stream(s)
+      case s => Stream(s) #::: duplicate(s.tail)
+    }
+
+  }
+
+  override def map[A, B](fa: Stream[A])(f: (A) => B): Stream[B] = fa map f
+}
+//Implementation of a signal processing filter using the extend method in a comonad
+//A filter provide a way to smooth the values into a stream
+//The integer "n" is the surrounding neighborhood that we have to
+//take into account for apply the average for each element of the
+//original Stream. For example: if the stream is [1,2,3,4,5,6,7]
+//and n = 2, you compute a new Stream with the average of each
+//sublist composed by the 2 neigborhood of each element:
+//for 1 -> average of 1,2
+//for 2 -> avergate of 2,3 and so on...
+val averN = (n:Int, s:Stream[Int]) => s.take(n).sum / n
+
+val r1 = s extend (averN(20, _)) take 10 toList
+val r2 = Stream(1,2,3,4,5,6,7) extend (averN(3, _)) take 10 toList
