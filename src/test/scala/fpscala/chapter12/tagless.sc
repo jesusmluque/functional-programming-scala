@@ -6,8 +6,7 @@ import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import fpscala.chapter11.Monad
-import fpscala.chapter11.Implicits.monadOps
-import shapeless.{Generic, HList}
+import fpscala.chapter11.Implicits._
 
 
 object tagless {
@@ -27,16 +26,22 @@ object tagless {
   class Program[F[_]: Monad](repo: PersonRepository[F]) {
     def addOne() = {
       val p1 = new Person("Juan", UUID.randomUUID())
-      //First version: without MonadOps, we need to use implictly
-      //implicitly[Monad[F]].bind(repo.save(p1))(a => repo.findPerson(p1.id))
+      //First version: without MonadOps, we need to use implicitly
+      implicitly[Monad[F]].flatMap(repo.save(p1))(a => repo.findPerson(a.id))
       //With the MonadOpts implementing only the flatmap, you can avoid implicitly
-      //repo.save(p1) >>= (_ => repo.findPerson(p1.id))
-      //If the MonadOpts has flatmap and map, now we can use the for comprehencion
+      repo.save(p1) >>= (p => repo.findPerson(p.id))
+      //If the MonadOpts has flatmap and map, now we can use the for comprehension
 
       for {
         _ <- repo.save(p1)
         p <- repo.findPerson(p1.id)
       } yield p
+
+      //Also, we can use kleisli composition syntax
+      val save = (p:Person) => repo.save(p)
+      val find = (p:Person) => repo.findPerson(p.id)
+      val saveAndFind = save <=< find
+      saveAndFind(p1)
     }
 
   }

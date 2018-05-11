@@ -48,3 +48,4 @@ streamApplicative.sequence(List(streamApplicative.unit(1), streamApplicative.uni
 
 (Stream(1, 2) |@| Stream(1, 2)) {_ + _} toList
 
+Stream({(_:Int) + (_:Int)}.curried) <*> Stream(1,2) <*> Stream(3,4) toList

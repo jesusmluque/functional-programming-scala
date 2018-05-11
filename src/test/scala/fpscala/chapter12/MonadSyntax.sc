@@ -72,7 +72,7 @@ val c2 = (a: NEL[Int]) => a.head + 2
 //Comonad instance for Stream
 val s = 1 to 100 toStream
 implicit val streamComonad = new Comonad[Stream] {
-  override def extract[A](a: Stream[A]) = a.head
+  override def extract[A](a: Stream[A]): A = a.head
 
   override def duplicate[A](a: Stream[A]): Stream[Stream[A]] = {
     a match {
@@ -90,10 +90,12 @@ implicit val streamComonad = new Comonad[Stream] {
 //take into account for apply the average for each element of the
 //original Stream. For example: if the stream is [1,2,3,4,5,6,7]
 //and n = 2, you compute a new Stream with the average of each
-//sublist composed by the 2 neigborhood of each element:
+//sublist composed by the 2 neighborhood of each element:
 //for 1 -> average of 1,2
 //for 2 -> avergate of 2,3 and so on...
 val averN = (n:Int, s:Stream[Int]) => s.take(n).sum / n
+val averNCoKleisli =  averN.curried(20)
 
-val r1 = s extend (averN(20, _)) take 10 toList
+val r1 = s extend averNCoKleisli take 10 toList
+
 val r2 = Stream(1,2,3,4,5,6,7) extend (averN(3, _)) take 10 toList
