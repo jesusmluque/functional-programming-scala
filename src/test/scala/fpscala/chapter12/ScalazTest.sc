@@ -1,4 +1,5 @@
 import scalaz._
+import Lens._
 
 object ScalazTest {
   import Scalaz._
@@ -90,6 +91,27 @@ object ScalazTest {
   inter(2 |> fun >=> fun2 >=> fun3).run
   inter(fun2(2)).run
 
-  
+  //Lenses examples
+  val m = Map("A" -> Seq("Jesus", "Pedro"))
+
+  val m3 = Map(("A", "B"))
+  val m2 = m.updated("A", "A" -> m.get("A") match {
+    case (_, None) => Seq("Alonso")
+    case (_, Some(value)) => "Alonso" +: value
+  })
+
+  def containsKey(key: String): Map[String, Seq[String]] @> Option[Seq[String]] = lensu[Map[String, Seq[String]], Option[Seq[String]]](
+    (m, s) => m.updated(key, s.get),
+    m => m.get(key)
+  )
+  def seqHead: Option[Seq[String]] @> Option[String] = lensu[Option[Seq[String]], Option[String]](
+    (s, head) => s.map(head.get +: _),
+    s => s.map(_.head)
+  )
+  containsKey("A").mod(a => a.map("Alonso" +: _), m)
+
+  val changeMap = containsKey("A").andThen(seqHead)
+  changeMap.set(m, Some("Alonso"))
+  changeMap.get(m)
 
 }
