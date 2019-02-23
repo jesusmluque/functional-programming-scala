@@ -46,3 +46,28 @@ case class Person(age: Int, name: String)
 
 Show(Person(5, "Carlos"))
 Person(4, "Juan").show
+
+
+
+
+//type classes with simulacrum macros
+import simulacrum._
+@typeclass trait Number[A] {
+  @op("+") def sum(a: A, b: A):A
+  @op("*") def times(a: A, b: A): A
+  def negate(a:A): A
+}
+
+case class Complex(r: Double, i: Double)
+
+implicit val complexNumber = new Number[Complex] {
+  override def sum(a: Complex, b: Complex) = Complex(a.r + b.r, a.i + b.i)
+
+  override def times(a: Complex, b: Complex) = Complex(a.r * b.r - a.i * b.i, a.i * b.r + a.i * b.r)
+
+  override def negate(a: Complex) = Complex(a.r * -1, a.i * -1)
+}
+import Number.ops._
+Complex(1,2) + Complex(3, 4)
+Complex(1,2) * Complex(3,4)
+

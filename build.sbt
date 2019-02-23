@@ -12,6 +12,11 @@ libraryDependencies += "org.scalaz" %% "scalaz-ioeffect" % "2.0.0"
 libraryDependencies ++= Seq(
   "com.chuusai" %% "shapeless" % "2.3.3"
 )
+libraryDependencies += "com.github.mpilquist" %% "simulacrum" % "0.15.0"
+
+// For Scala 2.10-2.12
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+
 
 val gitHeadCommitSha = taskKey[String](
   "Determines the current git commit SHA")
