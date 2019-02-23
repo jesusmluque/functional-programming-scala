@@ -1,5 +1,6 @@
 import fpscala.chapter12.Applicative
 import fpscala.chapter12.Implicits._
+import scalaz.{-\/, NonEmptyList, \/}
 //Option instance for Applicative type class
 implicit val optionA2 = new Applicative[Option] {
   def unit[A](a: => A):Option[A] = Some(a)
@@ -47,5 +48,11 @@ streamApplicative.sequence(List(streamApplicative.unit(1), streamApplicative.uni
 
 
 (Stream(1, 2) |@| Stream(1, 2)) {_ + _} toList
+
+val v1: \/[NonEmptyList[String], Int] = -\/(NonEmptyList("hola"))
+val v2: \/[NonEmptyList[String], Int] = -\/(NonEmptyList("adios"))
+
+(v1.validation |@| v2.validation) {_ + _}
+
 
 Stream({(_:Int) + (_:Int)}.curried) <*> Stream(1,2) <*> Stream(3,4) toList

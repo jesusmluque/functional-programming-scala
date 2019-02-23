@@ -114,4 +114,11 @@ object ScalazTest {
   changeMap.set(m, Some("Alonso"))
   changeMap.get(m)
 
+  val v1: \/[NonEmptyList[String], Int] = -\/(NonEmptyList("hola"))
+  val v2: \/[NonEmptyList[String], Int] = -\/(NonEmptyList("adios"))
+
+  (v1 |@| v2) {_ + _}
+
+  (v1.validation |@| v2.validation) {_ + _}
+
 }

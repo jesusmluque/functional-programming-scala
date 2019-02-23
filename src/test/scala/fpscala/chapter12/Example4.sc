@@ -116,4 +116,12 @@ object Example4 {
   existElement[IO, Int](11, List(5,3,4,2,1,6,8,7,9)).performEff()
   existElement[IO, Int](4, List(5,3,4,2,1,6,8,7,9)).performEff()
 
+
+  case object identity {
+    def apply[A](a:A) = a
+  }
+  identity("hola")
+  identity(1)
+
+
 }
